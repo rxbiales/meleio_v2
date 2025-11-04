@@ -52,7 +52,7 @@ export function AboutComponent() {
             </div>
 
             <div className="flex flex-col gap-4 sm:flex-row">
-              adicionar botões aqui
+              adicionar botões/link aqui
             </div>
           </div>
         </section>
