@@ -31,11 +31,13 @@ function FamiliesSummaryCardComponent({
   return (
     <article
       data-block="family-notifications"
-      className="rounded-2xl border border-purple-100 bg-white p-6 shadow"
+      className="rounded-2xl border border-purple-100 bg-white p-6 shadow lg:p-7 xl:p-8"
     >
-      <header className="mb-4 flex items-center justify-between">
+      <header className="mb-4 flex items-center justify-between lg:mb-5">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl font-semibold text-gray-900">Familias</h2>
+          <h2 className="text-xl font-semibold text-gray-900 lg:text-2xl">
+            Familias
+          </h2>
           <Tooltip text="Resumo das mensagens trocadas nas ultimas 24 horas.">
             <Info className="h-4 w-4 text-gray-400" />
           </Tooltip>
@@ -43,9 +45,9 @@ function FamiliesSummaryCardComponent({
         <span className="text-sm text-gray-600">Ultimas 24h</span>
       </header>
 
-      <ul className="space-y-3">
-        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3">
-          <span className="text-sm font-semibold text-gray-900">
+      <ul className="space-y-3 lg:space-y-4">
+        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3 lg:p-4">
+          <span className="text-sm font-semibold text-gray-900 lg:text-base">
             Mensagens novas
           </span>
           <span className={badgeStyles.novas}>
@@ -53,8 +55,8 @@ function FamiliesSummaryCardComponent({
           </span>
         </li>
 
-        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3">
-          <span className="text-sm font-semibold text-gray-900">
+        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3 lg:p-4">
+          <span className="text-sm font-semibold text-gray-900 lg:text-base">
             Confirmadas
           </span>
           <span className={badgeStyles.confirmadas}>
@@ -62,32 +64,36 @@ function FamiliesSummaryCardComponent({
           </span>
         </li>
 
-        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3">
-          <span className="text-sm font-semibold text-gray-900">Pendentes</span>
+        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3 lg:p-4">
+          <span className="text-sm font-semibold text-gray-900 lg:text-base">
+            Pendentes
+          </span>
           <span className={badgeStyles.pendentes}>
             {formatMetric(familias.pendentes)}
           </span>
         </li>
 
-        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3">
-          <span className="text-sm font-semibold text-gray-900">Urgentes</span>
+        <li className="flex items-center justify-between rounded-xl border border-purple-100 p-3 lg:p-4">
+          <span className="text-sm font-semibold text-gray-900 lg:text-base">
+            Urgentes
+          </span>
           <span className={badgeStyles.urgentes}>
             {formatMetric(familias.urgentes)}
           </span>
         </li>
       </ul>
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between lg:mt-6">
         <Link
           href="/home/dashboard/familias"
-          className="text-sm font-medium text-purple-700 transition hover:text-purple-800"
+          className="text-sm font-medium text-purple-700 transition hover:text-purple-800 lg:text-base"
         >
           Ver todas as mensagens ->
         </Link>
 
         <Link
           href="/help"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 transition hover:text-gray-700"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 transition hover:text-gray-700 lg:text-sm"
         >
           <HelpCircle className="h-4 w-4" />
           Central de ajuda

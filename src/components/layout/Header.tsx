@@ -1,8 +1,14 @@
 "use client";
 
+import type { CSSProperties, ReactElement } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactElement } from "react";
+
+const innerStyle = {
+  marginLeft: "var(--sb-w, 4rem)",
+  maxWidth: "var(--content-max-w)",
+  width: "calc(100vw - var(--sb-w, 4rem))",
+} as CSSProperties;
 
 export default function Header(): ReactElement {
   const pathname = usePathname();
@@ -10,16 +16,18 @@ export default function Header(): ReactElement {
   return (
     <header
       data-component="site-header"
-      className="sticky top-0 z-40 w-full border-b border-purple-100 bg-white/80 backdrop-blur-md"
+      className="sticky top-0 z-40 w-full border-b border-purple-100 bg-white/85 backdrop-blur-md"
+      style={{ "--header-height": "4rem" } as CSSProperties}
     >
       <div
         data-element="header-inner"
-        className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6"
+        className="flex h-[var(--header-height,4rem)] w-full items-center justify-between px-4 md:px-6 lg:px-8"
+        style={innerStyle}
       >
         <Link
           href="/"
           data-role="brand"
-          className="text-2xl font-bold tracking-tight text-purple-600"
+          className="text-2xl font-bold tracking-tight text-purple-600 lg:text-3xl"
         >
           MELEIO
         </Link>
@@ -65,12 +73,12 @@ export default function Header(): ReactElement {
           </Link>
         </nav>
         <div
-          className="hidden md:flex items-center gap-3"
+          className="hidden items-center gap-3 md:flex"
           data-element="header-meta"
         >
           <span
             data-role="tagline"
-            className="text-xs font-semibold uppercase tracking-wider text-purple-500"
+            className="text-xs font-semibold uppercase tracking-wider text-purple-500 lg:text-sm"
           >
             plataforma sel
           </span>

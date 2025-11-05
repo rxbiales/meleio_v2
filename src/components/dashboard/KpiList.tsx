@@ -22,14 +22,14 @@ function KpiListComponent({
   return (
     <section
       data-section="secondary-kpis"
-      className="grid grid-cols-1 gap-6 md:grid-cols-2"
+      className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:gap-8"
     >
       <KpiCard
         title="Alunos acompanhados"
         titleHint="Total de estudantes com dados ativos no periodo."
         value={numberPtBr.format(alunosAcompanhados)}
         description="Atualizado ha 3 horas"
-        href="/home/dashboard/turmas"
+        href="/dashboard/estudantes"
         icon={BookOpen}
         visual={
           <div className="h-2 w-full rounded-full bg-purple-100">

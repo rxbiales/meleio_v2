@@ -93,9 +93,11 @@ export default function Table({
 
   return (
     <div className="w-full">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         {caption ? (
-          <h3 className="text-base font-semibold text-purple-700">{caption}</h3>
+          <h3 className="text-base font-semibold text-purple-700 lg:text-lg">
+            {caption}
+          </h3>
         ) : (
           <div />
         )}
@@ -107,13 +109,13 @@ export default function Table({
               value={rawQuery}
               onChange={(event) => setRawQuery(event.target.value)}
               placeholder={searchPlaceholder}
-              className="h-9 w-64 rounded-full border border-purple-200 bg-white px-4 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200"
+              className="h-10 w-64 rounded-full border border-purple-200 bg-white px-4 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200 lg:h-11 lg:w-72 lg:text-base"
               aria-label="Buscar por aluno"
             />
             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-purple-500">
               <svg
-                width="14"
-                height="14"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -130,105 +132,109 @@ export default function Table({
         )}
       </div>
 
-      <table className="w-full min-w-[1000px] border-collapse rounded-2xl bg-white shadow-md ring-1 ring-purple-200">
-        <thead className="bg-purple-600 text-white">
-          <tr>
-            {columns.map((column) => {
-              const align = column.align ?? "left";
-              const sortable = column.sortable !== false;
-              const active = sortKey === column.key;
-              return (
-                <th
-                  key={column.key}
+      <div className="relative w-full overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-purple-200">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-full border-collapse">
+            <thead className="bg-purple-600 text-white">
+              <tr>
+                {columns.map((column) => {
+                  const align = column.align ?? "left";
+                  const sortable = column.sortable !== false;
+                  const active = sortKey === column.key;
+                  return (
+                    <th
+                      key={column.key}
+                      className={cn(
+                        "border-b border-black/10 px-4 py-3 text-sm font-semibold lg:px-5 lg:py-4 lg:text-base",
+                        align === "center" && "text-center",
+                        align === "right" && "text-right"
+                      )}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleSort(column.key, sortable)}
+                        className={cn(
+                          "inline-flex items-center gap-1",
+                          sortable
+                            ? "cursor-pointer hover:opacity-90"
+                            : "cursor-default"
+                        )}
+                        title={sortable ? "Ordenar coluna" : undefined}
+                      >
+                        <span>{column.label}</span>
+                        {sortable && (
+                          <span
+                            className={cn(
+                              "inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold",
+                              active
+                                ? "bg-white text-purple-600"
+                                : "bg-white/25 text-white"
+                            )}
+                          >
+                            {active ? (sortDir === "asc" ? "^" : "v") : "-"}
+                          </span>
+                        )}
+                      </button>
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+
+            <tbody className="text-sm text-gray-900 lg:text-base">
+              {sorted.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="px-4 py-10 text-center text-gray-500 lg:px-5"
+                  >
+                    {emptyMessage}
+                  </td>
+                </tr>
+              )}
+
+              {sorted.map((row, rowIndex) => (
+                <tr
+                  key={rowIndex}
                   className={cn(
-                    "border-b border-black/10 px-4 py-3 text-sm font-semibold",
-                    align === "center" && "text-center",
-                    align === "right" && "text-right"
+                    "border-b border-purple-100 transition-colors",
+                    rowIndex % 2 === 1 ? "bg-purple-50/30" : "bg-white",
+                    "hover:bg-orange-50/40"
                   )}
                 >
-                  <button
-                    type="button"
-                    onClick={() => handleSort(column.key, sortable)}
-                    className={cn(
-                      "inline-flex items-center gap-1",
-                      sortable
-                        ? "cursor-pointer hover:opacity-90"
-                        : "cursor-default"
-                    )}
-                    title={sortable ? "Ordenar coluna" : undefined}
-                  >
-                    <span>{column.label}</span>
-                    {sortable && (
-                      <span
+                  {columns.map((column) => {
+                    const align = column.align ?? "left";
+                    const content = column.render
+                      ? column.render(row, rowIndex)
+                      : row?.[column.key];
+                    return (
+                      <td
+                        key={column.key}
                         className={cn(
-                          "inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold",
-                          active
-                            ? "bg-white text-purple-600"
-                            : "bg-white/25 text-white"
+                          "px-4 py-3 lg:px-5 lg:py-4",
+                          align === "center" && "text-center",
+                          align === "right" && "text-right",
+                          column.className
                         )}
                       >
-                        {active ? (sortDir === "asc" ? "^" : "v") : "-"}
-                      </span>
-                    )}
-                  </button>
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
+                        {content ?? "—"}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
 
-        <tbody className="text-sm text-gray-900">
-          {sorted.length === 0 && (
-            <tr>
-              <td
-                colSpan={columns.length}
-                className="px-4 py-10 text-center text-gray-500"
-              >
-                {emptyMessage}
-              </td>
-            </tr>
-          )}
-
-          {sorted.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className={cn(
-                "border-b border-purple-100 transition-colors",
-                rowIndex % 2 === 1 ? "bg-purple-50/30" : "bg-white",
-                "hover:bg-orange-50/40"
-              )}
-            >
-              {columns.map((column) => {
-                const align = column.align ?? "left";
-                const content = column.render
-                  ? column.render(row, rowIndex)
-                  : row?.[column.key];
-                return (
-                  <td
-                    key={column.key}
-                    className={cn(
-                      "px-4 py-3",
-                      align === "center" && "text-center",
-                      align === "right" && "text-right",
-                      column.className
-                    )}
-                  >
-                    {content ?? "—"}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-
-        <tfoot>
-          <tr>
-            <td colSpan={columns.length} className="p-0">
-              <div className="h-1 w-full rounded-b-2xl bg-gradient-to-r from-purple-600 via-orange-500 to-yellow-400" />
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+            <tfoot>
+              <tr>
+                <td colSpan={columns.length} className="p-0">
+                  <div className="h-1 w-full rounded-b-2xl bg-gradient-to-r from-purple-600 via-orange-500 to-yellow-400" />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
