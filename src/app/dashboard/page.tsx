@@ -9,7 +9,11 @@ const data: DashboardData = {
     target: 80,
     delta7d: 2,
     macro: [
-      { name: "Em progresso positivo", value: 38, color: MELEIO_PALETTE.purple },
+      {
+        name: "Em progresso positivo",
+        value: 38,
+        color: MELEIO_PALETTE.purple,
+      },
       { name: "Estáveis", value: 22, color: "#F59E0B" },
       { name: "Com queda leve", value: 18, color: MELEIO_PALETTE.orange },
       { name: "Atenção crítica", value: 12, color: "#EF4444" },
