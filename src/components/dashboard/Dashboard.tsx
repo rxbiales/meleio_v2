@@ -28,27 +28,24 @@ export default function DashboardPage({
 
   return (
     <div className="min-h-screen bg-gray-50" data-page="dashboard">
-      {/* Shell principal da pagina com o sidebar fixo */}
       <Sidebar />
-      <main className="pt-6 md:pt-8">
-        <div className="space-y-8">
-          <PulseHero pulse={pulse} />
-          <KpiList
-            alunosAcompanhados={alunosAcompanhados}
-            atividades7d={atividades7d}
+      <section className="space-y-8 pt-2 md:space-y-9 md:pt-4 xl:space-y-10">
+        <PulseHero pulse={pulse} />
+        <KpiList
+          alunosAcompanhados={alunosAcompanhados}
+          atividades7d={atividades7d}
+        />
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:gap-8">
+          <MeleioRoomCard
+            agenda={agenda}
+            occupancyPercent={agendaOcupacaoPercent}
           />
-
-          <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <MeleioRoomCard
-              agenda={agenda}
-              occupancyPercent={agendaOcupacaoPercent}
-            />
-            <FamiliesSummaryCard familias={familias} />
-          </section>
-
-          <MeloInsights melo={melo} />
+          <FamiliesSummaryCard familias={familias} />
         </div>
-      </main>
+
+        <MeloInsights melo={melo} />
+      </section>
     </div>
   );
 }

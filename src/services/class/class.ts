@@ -1,4 +1,4 @@
-/* import supabase from "@/lib/supabase";
+/*import supabase from "@/lib/supabase";
 
 export async function createClass(
   name: string,
@@ -6,7 +6,7 @@ export async function createClass(
   schoolYear: string,
   teacherId: string
 ) {
-  const { data, error } = await supabase.from("classes").insert({
+  const { error } = await supabase.from("classes").insert({
     name,
     description,
     school_year: schoolYear,
@@ -17,7 +17,5 @@ export async function createClass(
     console.error("Error creating class:", error);
     return null;
   }
-
-  return data;
 }
 */

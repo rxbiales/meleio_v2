@@ -25,7 +25,7 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
   return (
     <section
       data-section="hero-pulso"
-      className="rounded-3xl border border-purple-100 bg-white shadow"
+      className="rounded-3xl border border-purple-100 bg-white shadow lg:shadow-lg"
     >
       <div
         className="h-2 rounded-t-3xl"
@@ -33,25 +33,27 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
         aria-hidden
       />
 
-      <div className="grid gap-6 p-6 sm:grid-cols-[1fr_auto]">
+      <div className="grid gap-6 p-6 sm:grid-cols-[1fr_auto] lg:gap-8 lg:p-7 xl:p-8">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold text-gray-900">Pulso da rede</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 lg:text-3xl xl:text-4xl">
+              Pulso da rede
+            </h1>
             <Tooltip text="Indice socioemocional consolidado diariamente (0 a 100).">
               <Info className="h-4 w-4 text-gray-400" />
             </Tooltip>
           </div>
 
-          <div className="mt-3 flex items-end gap-3">
-            <span className="text-5xl font-extrabold text-gray-900">
+          <div className="mt-3 flex items-end gap-3 lg:gap-4">
+            <span className="text-5xl font-extrabold text-gray-900 lg:text-6xl">
               {value}
             </span>
-            <span className="text-lg text-gray-500">/100</span>
+            <span className="text-lg text-gray-500 lg:text-xl">/100</span>
             <Tooltip
               text={`Variacao em 7 dias: ${isUp ? "subiu" : "caiu"} ${Math.abs(delta7d)} pontos.`}
             >
               <span
-                className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold lg:text-sm ${
                   isUp ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                 }`}
               >
@@ -61,7 +63,7 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
             </Tooltip>
           </div>
 
-          <div className="relative mt-4 h-3 w-full rounded-full bg-gray-200">
+          <div className="relative mt-4 h-3 w-full rounded-full bg-gray-200 lg:mt-5">
             <div
               className="h-full rounded-full transition-[width] duration-300"
               style={{ width: `${value}%`, background: MELEIO_GRADIENT }}
@@ -74,30 +76,30 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
             />
           </div>
 
-          <div className="mt-2 flex items-center gap-3 text-xs text-gray-600">
+          <div className="mt-2 flex items-center gap-3 text-xs text-gray-600 lg:text-sm">
             <span className="rounded bg-gray-100 px-2 py-0.5">Meta: {target}</span>
             <span className="rounded bg-gray-100 px-2 py-0.5">
               Atualizacao diaria
             </span>
           </div>
 
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex gap-2 lg:mt-5 lg:gap-3">
             <Link
               href="/home/checkin/hoje"
-              className="rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 lg:px-4 lg:py-2 lg:text-sm"
             >
               Check-in rapido
             </Link>
             <Link
               href="/home/planos"
-              className="rounded-lg border border-purple-300 px-3 py-1.5 text-xs font-semibold text-purple-700 transition hover:bg-purple-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+              className="rounded-lg border border-purple-300 px-3 py-1.5 text-xs font-semibold text-purple-700 transition hover:bg-purple-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 lg:px-4 lg:py-2 lg:text-sm"
             >
               Rever planos
             </Link>
           </div>
         </div>
 
-        <div className="mx-auto h-56 w-56">
+        <div className="mx-auto h-56 w-56 lg:h-64 lg:w-64">
           <ResponsiveContainer>
             <PieChart>
               <Pie
@@ -133,9 +135,9 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-2 border-t border-purple-100 p-6 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 border-t border-purple-100 p-6 sm:grid-cols-2 lg:gap-3 lg:p-7">
         {[leftLegend, rightLegend].map((legend, legendIndex) => (
-          <ul key={legendIndex} className="grid grid-cols-1 gap-2 text-sm">
+          <ul key={legendIndex} className="grid grid-cols-1 gap-2 text-sm lg:text-base">
             {legend.map((slice) => (
               <li key={slice.name} className="flex items-start gap-2">
                 <span
