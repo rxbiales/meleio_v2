@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  ArrowRight,
   Sparkles,
   Users,
   Shield,
@@ -12,14 +11,11 @@ import {
   TrendingUp,
   School,
 } from "lucide-react";
-import { Button } from "../ui/button";
+
 export function AboutComponent() {
   return (
-    <div
-      data-page="about"
-      className="flex min-h-screen flex-col justify-between"
-    >
-      <main className="flex-1 space-y-20">
+    <div data-page="about" className="flex flex-col min-h-screen">
+      <main className="flex-grow space-y-20">
         <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-purple-700 via-purple-600 to-orange-500 px-6 py-20 text-white shadow-xl">
           <div className="mx-auto flex max-w-5xl flex-col items-center space-y-10 text-center">
             <div className="space-y-6">
@@ -272,7 +268,7 @@ export function AboutComponent() {
         </section>
       </main>
 
-      <footer className="bg-gray-900 px-6 py-12 text-gray-300">
+      <footer className="w-full bg-gray-900 px-6 py-12 text-gray-300 rounded-3xl">
         <div className="mx-auto max-w-6xl space-y-12">
           <div className="grid gap-8 md:grid-cols-4">
             <div>
