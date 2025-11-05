@@ -14,11 +14,8 @@ import {
 
 export function AboutComponent() {
   return (
-    <div
-      data-page="about"
-      className="flex min-h-screen flex-col justify-between"
-    >
-      <main className="flex-1 space-y-20">
+    <div data-page="about" className="flex flex-col min-h-screen">
+      <main className="flex-grow space-y-20">
         <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-purple-700 via-purple-600 to-orange-500 px-6 py-20 text-white shadow-xl">
           <div className="mx-auto flex max-w-5xl flex-col items-center space-y-10 text-center">
             <div className="space-y-6">
@@ -271,10 +268,8 @@ export function AboutComponent() {
         </section>
       </main>
 
-      <footer className="w-full bg-gray-900 px-6 py-12 text-gray-300">
-        <div className="w-full space-y-12">
-          {" "}
-          {/* removi mx-auto e max-w-6xl */}
+      <footer className="w-full bg-gray-900 px-6 py-12 text-gray-300 rounded-3xl">
+        <div className="mx-auto max-w-6xl space-y-12">
           <div className="grid gap-8 md:grid-cols-4">
             <div>
               <h3 className="text-2xl font-bold text-white">MELEIO</h3>
@@ -359,6 +354,7 @@ export function AboutComponent() {
               </ul>
             </div>
           </div>
+
           <div className="border-t border-gray-700 pt-8 text-center text-sm opacity-60">
             <p>
               © 2025 Empresa Arvoredu. Todos os direitos reservados.
