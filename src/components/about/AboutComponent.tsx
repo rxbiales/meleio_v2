@@ -51,9 +51,19 @@ export function AboutComponent() {
               </span>
             </div>
 
-            <div className="flex flex-col gap-4 sm:flex-row">
-              adicionar botões/link aqui
-            </div>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center rounded-full border border-purple-200 px-10 py-4 text-lg font-semibold text-white transition hover:bg-purple-50 hover:text-purple-700"
+            >
+              Ir para o Dashboard
+            </Link>
+
+            <Link
+              href="/ajuda"
+              className="inline-flex items-center justify-center rounded-full border border-purple-200 px-10 py-4 text-lg font-semibold text-white transition hover:bg-purple-50 hover:text-purple-700"
+            >
+              Ajuda
+            </Link>
           </div>
         </section>
 

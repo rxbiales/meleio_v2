@@ -6,15 +6,17 @@
   --meleio-yellow: #facc15;
   --meleio-orange: #f97316;
   --meleio-purple: #9333ea;
+  --sb-w: 4rem;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-gray-50 text-gray-900 antialiased overflow-x-hidden;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 }
@@ -29,9 +31,11 @@ html {
 }
 
 [data-element='content-wrapper'] {
-  width: min(100%, 1120px);
-  margin: 0 auto;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0;
   padding: 2rem 1.5rem;
+  margin-left: var(--sb-w, 4rem);
 }
 
 [data-component='site-header'] {
