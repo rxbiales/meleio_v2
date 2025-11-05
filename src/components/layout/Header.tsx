@@ -40,28 +40,28 @@ export default function Header(): ReactElement {
             Home
           </Link>
           <Link
-            href="/about"
-            aria-current={pathname === "/about" ? "page" : undefined}
+            href="/sobre"
+            aria-current={pathname === "/sobre" ? "page" : undefined}
             data-role="nav-link"
             className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              pathname === "/about"
+              pathname === "/sobre"
                 ? "bg-purple-50 text-purple-600"
                 : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
             }`}
           >
-            About
+            Sobre
           </Link>
           <Link
-            href="/help"
-            aria-current={pathname === "/help" ? "page" : undefined}
+            href="/ajuda"
+            aria-current={pathname === "/ajuda" ? "page" : undefined}
             data-role="nav-link"
             className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              pathname === "/help"
+              pathname === "/ajuda"
                 ? "bg-purple-50 text-purple-600"
                 : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
             }`}
           >
-            Help
+            Ajuda
           </Link>
         </nav>
         <div
