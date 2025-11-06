@@ -37,7 +37,7 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-semibold text-gray-900 lg:text-3xl xl:text-4xl">
-              Pulso da rede
+              Pulso das últimas 2 semanas
             </h1>
             <Tooltip text="Indice socioemocional consolidado diariamente (0 a 100).">
               <Info className="h-4 w-4 text-gray-400" />
@@ -50,14 +50,22 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
             </span>
             <span className="text-lg text-gray-500 lg:text-xl">/100</span>
             <Tooltip
-              text={`Variacao em 7 dias: ${isUp ? "subiu" : "caiu"} ${Math.abs(delta7d)} pontos.`}
+              text={`Variacao em 7 dias: ${isUp ? "subiu" : "caiu"} ${Math.abs(
+                delta7d
+              )} pontos.`}
             >
               <span
                 className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold lg:text-sm ${
-                  isUp ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                  isUp
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
                 }`}
               >
-                {isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                {isUp ? (
+                  <ArrowUpRight size={14} />
+                ) : (
+                  <ArrowDownRight size={14} />
+                )}
                 {Math.abs(delta7d)}
               </span>
             </Tooltip>
@@ -69,18 +77,21 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
               style={{ width: `${value}%`, background: MELEIO_GRADIENT }}
               aria-label={`Pulso atual: ${value}`}
             />
+
             <div
-              className="absolute top-1/2 h-4 w-4 -translate-y-1/2 translate-x-[-50%] rounded-full border-2 border-purple-600 bg-white shadow-sm"
+              className="absolute top-1/2 -translate-y-1/2 translate-x-[-50%]"
               style={{ left: `${target}%` }}
               aria-label={`Meta: ${target}`}
-            />
-          </div>
-
-          <div className="mt-2 flex items-center gap-3 text-xs text-gray-600 lg:text-sm">
-            <span className="rounded bg-gray-100 px-2 py-0.5">Meta: {target}</span>
-            <span className="rounded bg-gray-100 px-2 py-0.5">
-              Atualizacao diaria
-            </span>
+            >
+              <div className="relative h-4 w-4 rounded-full border-2 border-purple-600 bg-white shadow-sm">
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                  <div className="rounded-md bg-purple-600 px-2 py-0.5 text-[10px] font-medium text-white">
+                    Meta
+                  </div>
+                  <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-600"></div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="mt-4 flex gap-2 lg:mt-5 lg:gap-3">
@@ -99,7 +110,7 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
           </div>
         </div>
 
-        <div className="mx-auto h-56 w-56 lg:h-64 lg:w-64">
+        <div className="mx-auto h-80 w-80 lg:h-96 lg:w-96">
           <ResponsiveContainer>
             <PieChart>
               <Pie
@@ -124,9 +135,7 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
                       dominantBaseline="middle"
                       fill="#6B7280"
                       fontSize="12"
-                    >
-                      7 dias
-                    </text>
+                    ></text>
                   )}
                 />
               </Pie>
@@ -137,7 +146,10 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
 
       <div className="grid grid-cols-1 gap-2 border-t border-purple-100 p-6 sm:grid-cols-2 lg:gap-3 lg:p-7">
         {[leftLegend, rightLegend].map((legend, legendIndex) => (
-          <ul key={legendIndex} className="grid grid-cols-1 gap-2 text-sm lg:text-base">
+          <ul
+            key={legendIndex}
+            className="grid grid-cols-1 gap-2 text-sm lg:text-base"
+          >
             {legend.map((slice) => (
               <li key={slice.name} className="flex items-start gap-2">
                 <span

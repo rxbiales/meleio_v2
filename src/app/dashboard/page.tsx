@@ -10,14 +10,26 @@ const data: DashboardData = {
     delta7d: 2,
     macro: [
       {
-        name: "Em progresso positivo",
+        name: "Em progresso positivo: Alunos com melhora constante",
         value: 38,
         color: MELEIO_PALETTE.purple,
       },
-      { name: "Estáveis", value: 22, color: "#F59E0B" },
-      { name: "Com queda leve", value: 18, color: MELEIO_PALETTE.orange },
-      { name: "Atenção crítica", value: 12, color: "#EF4444" },
-      { name: "Sem dados recentes", value: 10, color: "#94A3B8" },
+      { name: "Estáveis: Sem grandes variações", value: 22, color: "#F59E0B" },
+      {
+        name: "Com queda leve: Pequena redução no desempenho",
+        value: 18,
+        color: MELEIO_PALETTE.orange,
+      },
+      {
+        name: "Atenção crítica: Necessitam acompanhamento próximo",
+        value: 12,
+        color: "#EF4444",
+      },
+      {
+        name: "Sem dados recentes: Sem atualizações nos últimos dias",
+        value: 10,
+        color: "#94A3B8",
+      },
     ],
   },
   alunosAcompanhados: 1312,

@@ -31,7 +31,7 @@ function MeleioRoomCardComponent({
           </Tooltip>
         </div>
         <span className="text-sm font-medium text-purple-700 lg:text-base">
-          Ocupacao:{" "}
+          Ocupação:{" "}
           <span className="font-bold text-purple-800">{occupancyPercent}%</span>
         </span>
       </header>
