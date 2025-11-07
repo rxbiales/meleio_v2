@@ -83,7 +83,7 @@ function MeleioRoomCardComponent({
           href="/home/dashboard/atividades"
           className="text-sm font-medium text-purple-700 transition hover:text-purple-800 lg:text-base"
         >
-          Ver agenda completa - &gt;
+          Ver agenda completa -&gt;
         </Link>
       </div>
     </article>

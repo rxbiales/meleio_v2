@@ -88,8 +88,7 @@ function FamiliesSummaryCardComponent({
           href="/home/dashboard/familias"
           className="text-sm font-medium text-purple-700 transition hover:text-purple-800 lg:text-base"
         >
-          HEAD Ver todas as mensagens ======= Ver todas as mensagens -`&gt;`
-          da5addee9552f8078ab692eb0cec902891cf9055
+          Ver todas as mensagens -&gt;
         </Link>
 
         <Link
