@@ -1,353 +1,240 @@
 "use client";
 
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip as ReTooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  CartesianGrid,
-} from "recharts";
-import { CalendarDays, Clock } from "lucide-react";
-import React from "react";
+import { useMemo, useState } from "react";
 
-type PulsePoint = {
-  date: string;
-  pulso: number;
-  ivs: number;
-  engajamento: number;
-};
-type EventItem = {
-  date: string; // "2025-11-01"
-  hour?: string; // "09:20"
-  title: string; // "Mediação com a orientadora"
-  type: "mediacao" | "familia" | "atividade" | "saude" | "registro";
-  note?: string;
-  actor?: string; // "Prof. Karina", "Responsável", etc.
-};
+import type {
+  EventItem,
+  SeriesPoint,
+} from "@/components/student/students.mock";
+import { BROWN_HEX, MELEIO_PALETTE } from "@/lib/constants";
 
-export type StudentTimelineProps = {
+import { TimelineHero } from "./timeline/TimelineHero";
+import { TimelineTabs } from "./timeline/TimelineTabs";
+import { PeriodSelector } from "./timeline/PeriodSelector";
+import { TimelineMainChart } from "./timeline/TimelineMainChart";
+import { DeltaBars } from "./timeline/DeltaBars";
+import { CorrelationMiniChart } from "./timeline/CorrelationMiniChart";
+import { EventsList } from "./timeline/EventsList";
+import MeloInsights from "../layout/MeloInsights";
+export type StudentTimelineProProps = {
   aluno: { nome: string; turma: string; idade?: number };
-  series: PulsePoint[]; // dados do gráfico (pulso, ivs, engajamento)
-  events: EventItem[]; // eventos da linha do tempo
+  series: SeriesPoint[];
+  events: EventItem[];
 };
 
-function cn(...c: Array<string | false | undefined | null>) {
-  return c.filter(Boolean).join(" ");
-}
+type TabKey = "pulso" | "competencias";
+type PeriodKey = "4w" | "8w" | "12w" | "6m";
 
-const typeColor: Record<EventItem["type"], string> = {
-  mediacao: "bg-purple-600",
-  familia: "bg-orange-500",
-  atividade: "bg-yellow-400",
-  saude: "bg-rose-500",
-  registro: "bg-slate-400",
+const PERIOD_TO_POINTS: Record<PeriodKey, number> = {
+  "4w": 4,
+  "8w": 8,
+  "12w": 12,
+  "6m": 24,
 };
 
-export default function StudentTimeline({
+const PERIOD_LABEL: Record<PeriodKey, string> = {
+  "4w": "Últimas 4 semanas",
+  "8w": "Últimas 8 semanas",
+  "12w": "Últimas 12 semanas",
+  "6m": "Últimos 6 meses",
+};
+
+const COMPETENCY_CONFIG: Array<{
+  key: "ar" | "em" | "re" | "co";
+  label: string;
+  color: string;
+}> = [
+  { key: "ar", label: "Autorregulação", color: MELEIO_PALETTE.yellow },
+  { key: "em", label: "Empatia", color: MELEIO_PALETTE.orange },
+  { key: "re", label: "Responsabilidade", color: BROWN_HEX },
+  { key: "co", label: "Colaboração", color: MELEIO_PALETTE.purple },
+];
+
+const MELO_ANALYSIS = {
+  analise:
+    "Nas últimas semanas, Ana apresentou uma leve oscilação no Pulso, mantendo-se dentro de uma faixa saudável. As competências de Empatia e Colaboração mostram correlação positiva, sugerindo um ambiente social equilibrado. Já a Autorregulação apresentou variações acentuadas, possivelmente associadas a períodos de maior carga acadêmica. Recomenda-se reforçar práticas de respiração guiada e feedback positivo em sala.",
+};
+
+export default function StudentTimelinePro({
   aluno,
   series,
   events,
-}: StudentTimelineProps) {
-  // últimos valores para “cards rápidos”
-  const last = series.at(-1);
+}: StudentTimelineProProps) {
+  const [tab, setTab] = useState<TabKey>("pulso");
+  const [period, setPeriod] = useState<PeriodKey>("8w");
+
+  const filtered = useMemo(() => {
+    const points = PERIOD_TO_POINTS[period];
+    return series.slice(Math.max(0, series.length - points));
+  }, [series, period]);
+
+  const lastPoint = filtered.at(-1);
+
+  const barsData = useMemo(() => buildBars(filtered, tab), [filtered, tab]);
+  const correlationData = useMemo(() => buildCorrelation(filtered), [filtered]);
+
+  // gera os dados formatados para o MeloInsights
+  const meloData = useMemo(() => {
+    const txt = MELO_ANALYSIS.analise;
+    const keywords = [
+      "Pulso",
+      "Empatia",
+      "Colaboração",
+      "Autorregulação",
+      "respiração guiada",
+      "feedback positivo",
+    ];
+
+    const sentences = txt
+      .replace(/\s+/g, " ")
+      .split(". ")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 4);
+
+    const bullets = sentences.map((s) =>
+      keywords.reduce(
+        (acc, k) => acc.replace(new RegExp(k, "gi"), (m) => `**${m}**`),
+        s
+      )
+    );
+
+    return {
+      bullets,
+      acoes: [
+        { label: "Aplicar check-in agora", href: "/home/checkin/hoje" },
+        {
+          label: "Rever plano individual",
+          href: `/home/planos/${encodeURIComponent(aluno.turma)}`,
+        },
+      ],
+    };
+  }, [aluno.turma]);
 
   return (
-    <section
-      data-component="student-timeline"
-      className="w-full space-y-6 lg:space-y-8"
-    >
-      {/* Header compacto */}
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">
-            {aluno.nome}
-            <span className="ml-2 align-middle text-sm font-medium text-gray-500">
-              • {aluno.turma}
-            </span>
-          </h2>
-          <p className="text-xs text-purple-700">
-            Linha do tempo • visão rápida
-          </p>
+    <article className="space-y-10 lg:space-y-12">
+      {/* HERO + GRÁFICO PRINCIPAL */}
+      <section className="space-y-6 lg:space-y-8">
+        <TimelineHero
+          student={aluno}
+          pulso={lastPoint?.pulso ?? 0}
+          engajamento={lastPoint?.engajamento ?? 0}
+          periodLabel={PERIOD_LABEL[period]}
+        />
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <TimelineTabs value={tab} onChange={setTab} />
+          <PeriodSelector value={period} onChange={setPeriod} />
         </div>
-        {/* KPIs compactos */}
-        <div className="flex items-center gap-2">
-          <Kpi label="Pulso" value={last?.pulso ?? 0} />
-          <Kpi label="IVS" value={(last?.ivs ?? 0).toFixed(2)} tone="orange" />
-          <Kpi
-            label="Engaj."
-            value={`${last?.engajamento ?? 0}%`}
-            tone="yellow"
+
+        <div
+          key={`chart-${tab}`}
+          className="rounded-3xl border border-purple-100 bg-white p-4 shadow-sm animate-in fade-in duration-150 lg:p-6"
+        >
+          <TimelineMainChart
+            data={filtered}
+            tab={tab}
+            lines={COMPETENCY_CONFIG}
+            student={aluno.nome}
           />
         </div>
-      </header>
+      </section>
 
-      {/* Charts */}
-      <div className="grid gap-4 md:grid-cols-5">
-        {/* Pulso (linha) */}
-        <Card title="Pulso (últimas semanas)">
-          <div className="h-40">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={series}>
-                <CartesianGrid stroke="#f3e8ff" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 11, fill: "#6b7280" }}
-                  tickMargin={6}
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{ fontSize: 11, fill: "#6b7280" }}
-                  width={28}
-                />
-                <ReTooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    borderRadius: 8,
-                    borderColor: "#ddd",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="pulso"
-                  stroke="#7c3aed" // purple-600
-                  strokeWidth={2.5}
-                  dot={false}
-                  activeDot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
+      {/* ANÁLISES COMPLEMENTARES */}
+      <section className="space-y-5">
+        <header className="space-y-2">
+          <h2 className="text-xl font-semibold text-gray-900 lg:text-2xl">
+            Análises complementares
+          </h2>
+          <p className="text-sm text-gray-600 lg:text-base">
+            Observe como as variações semanais ajudam a explicar os movimentos
+            do Pulso geral e como o engajamento acompanha esse percurso.
+          </p>
+        </header>
 
-        {/* IVS (área) */}
-        <Card title="IVS">
-          <div className="h-40">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={series}>
-                <CartesianGrid stroke="#f3e8ff" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 11, fill: "#6b7280" }}
-                  tickMargin={6}
-                />
-                <YAxis
-                  domain={[0, 1]}
-                  tick={{ fontSize: 11, fill: "#6b7280" }}
-                  width={28}
-                />
-                <ReTooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    borderRadius: 8,
-                    borderColor: "#ddd",
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="ivs"
-                  stroke="#f97316" // orange-500
-                  fill="url(#ivsGrad)"
-                  strokeWidth={2}
-                />
-                <defs>
-                  <linearGradient id="ivsGrad" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#f97316" stopOpacity={0.5} />
-                    <stop
-                      offset="100%"
-                      stopColor="#f97316"
-                      stopOpacity={0.05}
-                    />
-                  </linearGradient>
-                </defs>
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        {/* Engajamento (barra) */}
-        <Card className="md:col-span-3" title="Engajamento (%)">
-          <div className="h-40">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={series}>
-                <CartesianGrid stroke="#f3e8ff" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 11, fill: "#6b7280" }}
-                  tickMargin={6}
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{ fontSize: 11, fill: "#6b7280" }}
-                  width={28}
-                />
-                <ReTooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    borderRadius: 8,
-                    borderColor: "#ddd",
-                  }}
-                />
-                <Bar
-                  dataKey="engajamento"
-                  radius={[6, 6, 0, 0]}
-                  fill="url(#engGrad)"
-                />
-                <defs>
-                  <linearGradient id="engGrad" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0%" stopColor="#7c3aed" />
-                    <stop offset="100%" stopColor="#facc15" />
-                    {/* yellow-400 */}
-                  </linearGradient>
-                </defs>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-      </div>
-
-      {/* Timeline de eventos */}
-      <div className="rounded-2xl border border-purple-100 bg-white p-4 shadow-sm">
-        <h3 className="mb-3 text-sm font-semibold text-purple-700">
-          Eventos recentes
-        </h3>
-        <ol className="relative ml-3 space-y-4">
-          {/* linha vertical */}
-          <span className="absolute left-0 top-0 h-full w-1 rounded bg-gradient-to-b from-purple-600 via-orange-500 to-yellow-400" />
-          {events.map((ev, i) => (
-            <li key={i} className="relative pl-6">
-              {/* nó */}
-              <span
-                className={cn(
-                  "absolute left-[-6px] top-2 h-3 w-3 rounded-full ring-4 ring-white",
-                  typeColor[ev.type]
-                )}
-                aria-hidden
-              />
-              <div className="flex flex-wrap items-center gap-x-3 text-xs text-gray-500">
-                <span className="inline-flex items-center gap-1">
-                  <CalendarDays className="h-3.5 w-3.5 text-purple-600" />
-                  {formatDate(ev.date)}
-                </span>
-                {ev.hour && (
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5 text-purple-600" />
-                    {ev.hour}
-                  </span>
-                )}
-                {ev.actor && (
-                  <span className="text-purple-700">{ev.actor}</span>
-                )}
-                <Badge tone={ev.type}>{labelType(ev.type)}</Badge>
-              </div>
-              <p className="mt-1 text-sm font-medium text-gray-900">
-                {ev.title}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-3 rounded-3xl border border-purple-100 bg-white p-5 shadow-sm lg:p-6">
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Tendência semanal
+              </h3>
+              <p className="text-sm text-gray-600">
+                Cada barra mostra a variação em relação à semana anterior.
+                Utilize para identificar períodos de ganho ou queda acentuada.
               </p>
-              {ev.note && (
-                <p className="mt-0.5 text-xs text-gray-700">{ev.note}</p>
-              )}
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
+            </div>
+            <DeltaBars data={barsData} mode={tab} />
+          </div>
 
-/* Helpers visuais */
-function Card({
-  title,
-  className,
-  children,
-}: {
-  title: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <article
-      className={cn(
-        "rounded-2xl border border-purple-100 bg-white p-4 shadow-sm",
-        className
-      )}
-    >
-      <h3 className="mb-2 text-sm font-semibold text-purple-700">{title}</h3>
-      {children}
+          <div className="space-y-3 rounded-3xl border border-purple-100 bg-white p-5 shadow-sm lg:p-6">
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Correlação Pulso × Engajamento
+              </h3>
+              <p className="text-sm text-gray-600">
+                Compare o comportamento do Pulso com o engajamento nas últimas
+                semanas e avalie se os movimentos caminham juntos.
+              </p>
+            </div>
+            <CorrelationMiniChart data={correlationData} />
+          </div>
+        </div>
+      </section>
+
+      {/* EVENTOS */}
+      <section className="space-y-4">
+        <header className="space-y-1">
+          <h2 className="text-xl font-semibold text-gray-900 lg:text-2xl">
+            Histórico recente de interações
+          </h2>
+          <p className="text-sm text-gray-600 lg:text-base">
+            Registros que ajudam a contextualizar as mudanças observadas na
+            linha do tempo. Use-os para relacionar dados com fatos vividos.
+          </p>
+        </header>
+        <EventsList events={events} />
+      </section>
+
+      {/* ANÁLISE DO MELO */}
+      <MeloInsights melo={meloData} />
     </article>
   );
 }
 
-function Kpi({
-  label,
-  value,
-  tone = "purple" as "purple" | "orange" | "yellow",
-}) {
-  const styles =
-    tone === "purple"
-      ? "bg-purple-600/10 border-purple-600/30 text-purple-700"
-      : tone === "orange"
-      ? "bg-orange-500/10 border-orange-500/30 text-orange-600"
-      : "bg-yellow-400/20 border-yellow-400/40 text-yellow-700";
-  return (
-    <div
-      className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold",
-        styles
-      )}
-    >
-      <span className="opacity-80">{label}</span>
-      <span className="text-gray-900">{value}</span>
-    </div>
-  );
-}
+// ==== FUNÇÕES AUXILIARES ====
 
-function Badge({
-  tone,
-  children,
-}: {
-  tone: EventItem["type"];
-  children: React.ReactNode;
-}) {
-  const base =
-    tone === "mediacao"
-      ? "bg-purple-600/10 text-purple-700"
-      : tone === "familia"
-      ? "bg-orange-500/10 text-orange-600"
-      : tone === "atividade"
-      ? "bg-yellow-400/20 text-yellow-700"
-      : tone === "saude"
-      ? "bg-rose-500/10 text-rose-600"
-      : "bg-slate-400/10 text-slate-600";
-  return (
-    <span
-      className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", base)}
-    >
-      {children}
-    </span>
-  );
-}
+function buildBars(input: SeriesPoint[], mode: TabKey) {
+  if (input.length === 0) return [];
+  const formatter = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+  });
 
-function labelType(t: EventItem["type"]) {
-  switch (t) {
-    case "mediacao":
-      return "Mediação";
-    case "familia":
-      return "Família";
-    case "atividade":
-      return "Atividade";
-    case "saude":
-      return "Saúde";
-    default:
-      return "Registro";
+  if (mode === "pulso") {
+    const items: Array<{ label: string; value: number }> = [];
+    for (let i = 1; i < input.length; i += 1) {
+      const prev = input[i - 1];
+      const curr = input[i];
+      items.push({
+        label: formatter.format(new Date(curr.date)),
+        value: Number((curr.pulso - prev.pulso).toFixed(1)),
+      });
+    }
+    return items;
   }
+
+  return input.map((point) => ({
+    label: formatter.format(new Date(point.date)),
+    value: Math.round((point.ar + point.em + point.re + point.co) / 4),
+  }));
 }
 
-function formatDate(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+function buildCorrelation(input: SeriesPoint[]) {
+  if (input.length === 0) return [];
+  const slice = input.slice(-8);
+  return slice.map((point) => ({
+    date: point.date,
+    pulso: point.pulso,
+    engajamento: point.engajamento,
+  }));
 }

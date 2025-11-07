@@ -3,11 +3,19 @@
 import { memo, Fragment, type ReactElement } from "react";
 import Link from "next/link";
 import { Info } from "lucide-react";
-import Tooltip from "./Tooltip";
-import type { DashboardData } from "./types";
+import Tooltip from "../dashboard/Tooltip";
+
+interface MeloAction {
+  label: string;
+  href: string;
+}
+interface MeloData {
+  bullets: string[];
+  acoes: MeloAction[];
+}
 
 interface MeloInsightsProps {
-  melo: DashboardData["melo"];
+  melo: MeloData;
 }
 
 function renderHighlights(text: string, bulletIndex: number): ReactElement[] {
@@ -15,7 +23,6 @@ function renderHighlights(text: string, bulletIndex: number): ReactElement[] {
   if (parts.length === 1) {
     return [<Fragment key={`bullet-${bulletIndex}`}>{text}</Fragment>];
   }
-
   return parts.map((part, index) =>
     index % 2 === 1 ? (
       <strong key={`highlight-${bulletIndex}-${index}`}>{part}</strong>
@@ -36,9 +43,9 @@ function MeloInsightsComponent({ melo }: MeloInsightsProps): ReactElement {
         />
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-semibold text-gray-900 lg:text-2xl">
-            Melo (IA)
+            Melo (IA) — análise do aluno
           </h2>
-          <Tooltip text="Assistente que recomenda acoes alinhadas aos sinais do Pulso.">
+          <Tooltip text="Síntese do comportamento recente e ações sugeridas com base no Pulso, competências e eventos.">
             <Info className="h-4 w-4 text-gray-400" />
           </Tooltip>
         </div>
@@ -53,30 +60,32 @@ function MeloInsightsComponent({ melo }: MeloInsightsProps): ReactElement {
           ))}
         </ul>
 
-        <div className="rounded-xl bg-purple-50/60 p-3 text-[13px] lg:p-4 lg:text-sm">
-          <p className="font-semibold text-purple-900">
-            Acoes recomendadas
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
-            {melo.acoes.map((acao, index) => {
-              const isPrimary = index === 0;
-              const className = isPrimary
-                ? "rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 lg:px-4 lg:py-2 lg:text-sm"
-                : "rounded-lg border border-purple-200 px-3 py-1.5 text-xs font-semibold text-purple-700 transition hover:bg-purple-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 lg:px-4 lg:py-2 lg:text-sm";
-
-              return (
-                <Link key={`melo-action-${index}`} href={acao.href} className={className}>
-                  {acao.label}
-                </Link>
-              );
-            })}
+        {melo.acoes?.length ? (
+          <div className="rounded-xl bg-purple-50/60 p-3 text-[13px] lg:p-4 lg:text-sm">
+            <p className="font-semibold text-purple-900">Ações recomendadas</p>
+            <div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
+              {melo.acoes.map((acao, index) => {
+                const isPrimary = index === 0;
+                const className = isPrimary
+                  ? "rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 lg:px-4 lg:py-2 lg:text-sm"
+                  : "rounded-lg border border-purple-200 px-3 py-1.5 text-xs font-semibold text-purple-700 transition hover:bg-purple-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 lg:px-4 lg:py-2 lg:text-sm";
+                return (
+                  <Link
+                    key={`melo-action-${index}`}
+                    href={acao.href}
+                    className={className}
+                  >
+                    {acao.label}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </article>
   );
 }
 
 const MeloInsights = memo(MeloInsightsComponent);
-
 export default MeloInsights;
