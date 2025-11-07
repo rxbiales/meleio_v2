@@ -6,7 +6,7 @@ import PulseHero from "./PulseHero";
 import KpiList from "./KpiList";
 import MeleioRoomCard from "./MeleioRoomCard";
 import FamiliesSummaryCard from "./FamiliesSummaryCard";
-import MeloInsights from "./MeloInsights";
+import MeloInsights from "../layout/MeloInsights";
 import type { DashboardData } from "./types";
 
 interface DashboardPageProps {
