@@ -3,11 +3,11 @@ import Link from "next/link";
 
 import Sidebar from "@/components/layout/Sidebar";
 import { StudentProfileHeader } from "@/components/student/StudentProfileHeader";
+import { StudentProvider } from "@/components/student/StudentProvider";
 import {
-  StudentLayoutProvider,
-  type StudentLayoutData,
-} from "@/components/student/StudentLayoutContext";
-import { getStudentDataset } from "@/components/student/students.mock";
+  getStudentContextValue,
+  resolveStudentId,
+} from "@/components/student/students.mock";
 
 interface StudentLayoutProps {
   children: ReactNode;
@@ -18,9 +18,12 @@ export default function StudentLayout({
   children,
   params,
 }: StudentLayoutProps): ReactElement {
-  const dataset = getStudentDataset(params.studentId);
+  const normalizedId = resolveStudentId(params.studentId);
+  const contextValue = normalizedId
+    ? getStudentContextValue(normalizedId)
+    : null;
 
-  if (!dataset) {
+  if (!contextValue) {
     return (
       <>
         <Sidebar />
@@ -45,22 +48,17 @@ export default function StudentLayout({
     );
   }
 
-  const value: StudentLayoutData = {
-    studentId: params.studentId,
-    ...dataset,
-  };
-
   return (
     <>
       <Sidebar />
-      <StudentLayoutProvider value={value}>
+      <StudentProvider value={contextValue}>
         <section className="space-y-6 pb-12">
           <StudentProfileHeader />
           <div className="space-y-6" data-slot="student-detail">
             {children}
           </div>
         </section>
-      </StudentLayoutProvider>
+      </StudentProvider>
     </>
   );
 }

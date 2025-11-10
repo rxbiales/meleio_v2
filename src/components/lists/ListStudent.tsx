@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, KeyboardEvent } from "react";
+import { KeyboardEvent, useMemo } from "react";
 import Link from "next/link";
-import Sidebar from "@/components/layout/Sidebar";
-import { Search, X } from "lucide-react";
+import { Search, X, Users, Activity, Sparkles } from "lucide-react";
 
+import Sidebar from "@/components/layout/Sidebar";
+import { useTable } from "@/components/layout/Table";
+import { STUDENTS, type StudentId } from "@/components/student/students.mock";
 import {
   Table as ShadTable,
   TableBody,
@@ -17,8 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useTable } from "@/components/layout/Table";
-import { STUDENTS, type StudentId } from "@/components/student/students.mock";
 
 type Row = {
   id: StudentId;
@@ -34,11 +34,11 @@ export default function StudentList() {
     () =>
       STUDENTS.map((student) => ({
         id: student.id,
-        aluno: student.nome,
-        turma: student.turma,
-        pulso: student.pulso,
-        idade: student.idade,
-        engajamento: student.engajamento,
+        aluno: student.name,
+        turma: student.classGroup,
+        pulso: student.pulse,
+        idade: student.age ?? 0,
+        engajamento: student.engagement,
       })),
     []
   );
@@ -57,8 +57,25 @@ export default function StudentList() {
     initialSortKey: "aluno",
   });
 
-  const sortChevron = (key: keyof Row) =>
-    sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : "—";
+  const totalStudents = rows.length;
+  const averagePulse =
+    totalStudents > 0
+      ? Math.round(
+          rows.reduce((sum, student) => sum + student.pulso, 0) / totalStudents
+        )
+      : 0;
+  const highEngagementCount = rows.filter(
+    (student) => student.engajamento >= 75
+  ).length;
+  const highEngagementPercent =
+    totalStudents > 0
+      ? Math.round((highEngagementCount / totalStudents) * 100)
+      : 0;
+
+  const sortChevron = (key: keyof Row) => {
+    if (sortKey !== key) return "-";
+    return sortDir === "asc" ? "^" : "v";
+  };
 
   const keySort =
     (key: keyof Row) => (e: KeyboardEvent<HTMLTableCellElement>) => {
@@ -69,25 +86,78 @@ export default function StudentList() {
     };
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50" data-page="students-list">
       <Sidebar />
-      <section className="space-y-6 pb-10 lg:space-y-7 xl:space-y-8">
-        <div className="rounded-3xl bg-white/85 p-6 shadow-sm ring-1 ring-purple-100 backdrop-blur lg:p-8">
-          <header className="space-y-2">
-            <h1 className="text-2xl font-semibold text-gray-900 lg:text-3xl">
-              Turmas - Monitoramento
-            </h1>
-            <p className="text-sm text-gray-600 lg:text-base">
-              Indicadores SEL atualizados por aluno.
-            </p>
-          </header>
+      <section className="mx-auto max-w-7xl space-y-6 px-4 pb-10 sm:px-6 lg:space-y-8 lg:px-8">
+        <div className="relative overflow-hidden rounded-2xl border border-purple-100 bg-gradient-to-br from-purple-50 via-orange-50 to-yellow-50 p-6 shadow-sm lg:p-8">
+          <div className="absolute -top-10 right-0 h-48 w-48 rounded-full bg-purple-200/40 blur-3xl" />
+          <div className="absolute bottom-0 left-10 h-32 w-32 rounded-full bg-orange-200/30 blur-3xl" />
+          <div className="relative z-10 space-y-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="rounded-2xl bg-white p-3 shadow-sm">
+                  <Users className="h-8 w-8 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-purple-700">
+                    Pulso em tempo real
+                  </p>
+                  <h1 className="mt-1 text-3xl font-bold text-gray-900 lg:text-4xl">
+                    Turmas - Monitoramento ativo
+                  </h1>
+                  <p className="mt-2 max-w-2xl text-sm text-gray-700 lg:text-base">
+                    Acompanhe indicadores SEL, veja quem precisa de acolhimento
+                    imediato e celebre quem esta entregando muita energia.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="rounded-xl border border-white/60 bg-white/80 p-4 backdrop-blur">
+                <div className="mb-1 flex items-center gap-2 text-sm text-gray-600">
+                  <Users className="h-4 w-4 text-purple-600" />
+                  Total de estudantes
+                </div>
+                <p className="text-3xl font-semibold text-gray-900">
+                  {totalStudents}
+                </p>
+              </div>
+              <div className="rounded-xl border border-orange-100 bg-white/80 p-4 backdrop-blur">
+                <div className="mb-1 flex items-center gap-2 text-sm text-gray-600">
+                  <Activity className="h-4 w-4 text-orange-500" />
+                  Pulso medio
+                </div>
+                <p className="text-3xl font-semibold text-gray-900">
+                  {averagePulse}
+                </p>
+              </div>
+              <div className="rounded-xl border border-yellow-100 bg-white/80 p-4 backdrop-blur">
+                <div className="mb-1 flex items-center gap-2 text-sm text-gray-600">
+                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                  Engajamento alto
+                </div>
+                <p className="text-3xl font-semibold text-gray-900">
+                  {highEngagementPercent}%
+                </p>
+                <p className="text-xs text-gray-500">
+                  {highEngagementCount} estudantes
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="rounded-3xl bg-white/85 p-4 shadow-sm ring-1 ring-purple-100 backdrop-blur lg:p-6">
+        <div className="rounded-2xl border border-purple-100 bg-white/90 p-4 shadow-sm backdrop-blur lg:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-            <h3 className="text-base font-semibold text-purple-700 lg:text-lg">
-              Painel de alunos
-            </h3>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-600">
+                Explorar dados
+              </p>
+              <h3 className="text-base font-semibold text-gray-900 lg:text-xl">
+                Painel de alunos
+              </h3>
+            </div>
 
             <div className="relative">
               <Input
@@ -95,7 +165,7 @@ export default function StudentList() {
                 value={rawQuery}
                 onChange={onSearchChange}
                 placeholder="Buscar aluno..."
-                className="h-10 w-64 rounded-full pr-10 lg:h-11 lg:w-72"
+                className="h-12 w-full rounded-2xl border-gray-200 bg-white/90 pl-10 pr-12 text-base shadow-inner focus-visible:ring-purple-500 sm:w-72"
                 aria-label="Buscar por aluno"
               />
               {isWriting ? (
@@ -111,21 +181,22 @@ export default function StudentList() {
                 <Search
                   size={18}
                   strokeWidth={2}
-                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-purple-400"
                 />
               )}
             </div>
           </div>
 
-          <div className="relative w-full overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-purple-200">
-            <div className="w-full overflow-x-auto">
+          <div className="relative w-full overflow-hidden rounded-2xl border border-purple-100 bg-gradient-to-br from-white to-purple-50/30 shadow-lg">
+            <div className="pointer-events-none absolute -right-8 top-0 h-36 w-36 rounded-full bg-yellow-200/30 blur-3xl" />
+            <div className="pointer-events-none absolute bottom-0 left-0 h-40 w-40 rounded-full bg-purple-200/30 blur-3xl" />
+            <div className="relative z-10 w-full overflow-x-auto">
               <ShadTable className="min-w-full">
                 <TableCaption className="sr-only">
                   Painel de alunos
                 </TableCaption>
 
-                {/* Header com a MESMA cor anterior */}
-                <TableHeader className="bg-purple-600 text-white">
+                <TableHeader className="bg-gradient-to-r from-purple-600 via-orange-500 to-yellow-400 text-white">
                   <TableRow className="hover:bg-purple-700/10">
                     <TableHead
                       onClick={() => handleSort("aluno")}
@@ -258,11 +329,9 @@ export default function StudentList() {
                     sortedRows.map((row, idx) => (
                       <TableRow
                         key={`${row.aluno}-${idx}`}
-                        className={`
-                          border-b border-purple-100 transition-colors
-                          ${idx % 2 === 1 ? "bg-purple-50/30" : "bg-white"}
-                          hover:bg-orange-50/40
-                        `}
+                        className={`border-b border-purple-100 transition-colors ${
+                          idx % 2 === 1 ? "bg-purple-50/30" : "bg-white"
+                        } hover:bg-orange-50/40`}
                       >
                         <TableCell className="px-4 py-3">
                           <Link
@@ -293,16 +362,9 @@ export default function StudentList() {
                         <TableCell className="px-4 py-3">
                           <div className="flex items-center justify-end gap-2">
                             <div className="w-40 lg:w-48">
-                              {/* Progress com o MESMO gradiente anterior */}
                               <Progress
                                 value={row.engajamento}
-                                className="
-                                  h-2 bg-purple-100
-                                  [&>div]:bg-gradient-to-r
-                                  [&>div]:from-purple-600
-                                  [&>div]:via-orange-500
-                                  [&>div]:to-yellow-400
-                                "
+                                className="h-2 bg-purple-100 [&>div]:bg-gradient-to-r [&>div]:from-purple-600 [&>div]:via-orange-500 [&>div]:to-yellow-400"
                               />
                             </div>
                             <span className="w-10 text-right text-sm font-semibold text-purple-700">
@@ -321,6 +383,6 @@ export default function StudentList() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

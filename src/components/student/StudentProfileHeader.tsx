@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 
-import { useStudentLayout } from "@/components/student/useStudentLayout";
+import { useStudent, useStudentId } from "@/components/student/StudentProvider";
 
 const STUDENT_TABS = [
   { id: "timeline", label: "Timeline" },
@@ -13,9 +13,14 @@ const STUDENT_TABS = [
   { id: "planos", label: "Planos & Acoes" },
 ] as const;
 
-export function StudentProfileHeader() {
+interface StudentProfileHeaderProps {
+  actions?: ReactNode;
+}
+
+export function StudentProfileHeader({ actions }: StudentProfileHeaderProps) {
   const pathname = usePathname();
-  const { aluno, studentId } = useStudentLayout();
+  const student = useStudent();
+  const studentId = useStudentId();
   const basePath = `/dashboard/estudantes/${studentId}`;
 
   const activeTab = useMemo(() => {
@@ -40,19 +45,19 @@ export function StudentProfileHeader() {
               Estudantes
             </Link>
             <span aria-hidden="true">/</span>
-            <span className="text-gray-500">{aluno.nome}</span>
+            <span className="text-gray-500">{student.name}</span>
             <span aria-hidden="true">/</span>
             <span className="text-gray-900">{activeTab.label}</span>
           </nav>
 
           <div className="flex flex-wrap items-baseline gap-4">
             <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">
-              {aluno.nome}
+              {student.name}
             </h1>
             <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-              <span>Turma {aluno.turma}</span>
-              {typeof aluno.idade === "number" && (
-                <span>{aluno.idade} anos</span>
+              <span>Turma {student.classGroup}</span>
+              {typeof student.age === "number" && (
+                <span>{student.age} anos</span>
               )}
             </div>
           </div>
@@ -84,6 +89,8 @@ export function StudentProfileHeader() {
             );
           })}
         </div>
+
+        {actions ? <div>{actions}</div> : null}
       </div>
     </header>
   );
