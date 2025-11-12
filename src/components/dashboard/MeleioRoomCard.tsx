@@ -31,7 +31,7 @@ function MeleioRoomCardComponent({
           </Tooltip>
         </div>
         <span className="text-sm font-medium text-purple-700 lg:text-base">
-          Ocupacao:{" "}
+          Ocupação:{" "}
           <span className="font-bold text-purple-800">{occupancyPercent}%</span>
         </span>
       </header>
@@ -40,7 +40,10 @@ function MeleioRoomCardComponent({
         <div className="h-2.5 w-full rounded-full bg-purple-100 lg:h-3">
           <div
             className="h-2.5 rounded-full lg:h-3"
-            style={{ width: `${occupancyPercent}%`, background: MELEIO_GRADIENT }}
+            style={{
+              width: `${occupancyPercent}%`,
+              background: MELEIO_GRADIENT,
+            }}
             aria-label={`Taxa de ocupacao ${occupancyPercent}%`}
           />
         </div>
@@ -80,7 +83,7 @@ function MeleioRoomCardComponent({
           href="/home/dashboard/atividades"
           className="text-sm font-medium text-purple-700 transition hover:text-purple-800 lg:text-base"
         >
-          Ver agenda completa ->
+          Ver agenda completa -&gt;
         </Link>
       </div>
     </article>
