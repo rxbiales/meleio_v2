@@ -110,7 +110,7 @@ function PulseHeroComponent({ pulse }: PulseHeroProps): ReactElement {
           </div>
         </div>
 
-        <div className="mx-auto h-80 w-80 lg:h-96 lg:w-96">
+        <div className="mx-auto h-64 w-64 lg:h-80 lg:w-80">
           <ResponsiveContainer>
             <PieChart>
               <Pie
